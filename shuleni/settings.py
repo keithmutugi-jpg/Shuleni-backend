@@ -103,6 +103,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Keep local registration, login, and demo user creation responsive while
+# retaining Django's stronger default hasher outside DEBUG mode.
+if DEBUG:
+    PASSWORD_HASHERS = [
+        'api.hashers.PresentationPBKDF2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+        'django.contrib.auth.hashers.Argon2PasswordHasher',
+        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+        'django.contrib.auth.hashers.ScryptPasswordHasher',
+    ]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
