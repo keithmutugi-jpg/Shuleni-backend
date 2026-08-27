@@ -7,7 +7,7 @@ Django REST API backend for Shuleni — an online school management platform.
 - Multi-tenant school registration (each school's data is fully isolated)
 - Member accounts: owners, educators, and students
 - Token-based authentication
-- Adding students/educators with auto-generated login credentials
+- Adding students/educators with auto-generated login credentials.
 
 ## Setup
 
