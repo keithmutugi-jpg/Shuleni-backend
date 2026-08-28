@@ -27,6 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-b4ovk!ka)rep&)&yee3c^jyhxx
 DEBUG = os.getenv('DEBUG', '1') == '1'
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',') if host.strip()]
+if os.getenv('RENDER_EXTERNAL_HOSTNAME'):
+    ALLOWED_HOSTS.append(os.environ['RENDER_EXTERNAL_HOSTNAME'])
 
 
 # Application definition
@@ -139,11 +141,29 @@ STATIC_URL = 'static/'
 
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        'BACKEND': (
+            'django.core.mail.backends.console.EmailBackend'
+            if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
+        ),
+        'HOST': os.getenv('EMAIL_HOST', ''),
+        'PORT': os.getenv('EMAIL_PORT', '587'),
+        'USERNAME': os.getenv('EMAIL_HOST_USER', ''),
+        'PASSWORD': os.getenv('EMAIL_HOST_PASSWORD', ''),
+        'USE_TLS': os.getenv('EMAIL_USE_TLS', '1') == '1',
     },
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://shuleni-frontend-three.vercel.app",
-    "http://localhost:5173",
+    origin.strip()
+    for origin in os.getenv(
+        'CORS_ALLOWED_ORIGINS',
+        'https://shuleni-frontend-three.vercel.app,http://localhost:5173',
+    ).split(',')
+    if origin.strip()
 ]
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_HSTS_SECONDS = 31536000
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
